@@ -9,7 +9,7 @@ from sqlalchemy import create_engine, text
 PG_HOST = os.getenv("POSTGRES_HOST", "")
 PG_DB   = os.getenv("POSTGRES_DB", "")
 PG_USER = os.getenv("POSTGRES_USER", "")
-PG_PASS = os.getenv("POSTGRES_PASSWORD", "")
+PG_PASS = os.getenv("POSTGRES_PASS", "")
 
 engine = create_engine(f"postgresql://{PG_USER}:{PG_PASS}@{PG_HOST}:5432/{PG_DB}")
 
@@ -100,6 +100,8 @@ for symbol in symbols:
     )
 
     if not existing_dates.empty:
+        existing_dates["date"] = pd.to_datetime(existing_dates["date"])
+        df["date"] = pd.to_datetime(df["date"])
         df = df[~df["date"].isin(existing_dates["date"])]
 
     if df.empty:
