@@ -1,0 +1,7 @@
+.env
+env
+venv
+engine
+.ipynb_checkpoints
+*/.ipynb_checkpoints
+pg_data_new

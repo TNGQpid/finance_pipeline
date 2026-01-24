@@ -1,0 +1,57 @@
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: finance_postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASS}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./pg_data_new:/var/lib/postgresql/data
+      - ./init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    ports:
+      - "8060:80"
+    depends_on:
+      - postgres
+
+  #dbt:
+    #image: ghcr.io/dbt-labs/dbt-postgres:latest
+    #container_name: dbt_transform
+    #depends_on:
+      #- postgres
+    #volumes:
+      #- ./dbt_project:/usr/app
+    #working_dir: /usr/app
+    #environment:
+      #DBT_PROFILES_DIR: /usr/app
+
+  etl:
+    build: ./etl
+    container_name: finance_etl
+    depends_on:
+      postgres:
+        condition: service_healthy
+    #volumes:
+      #- ./etl:/app
+    #working_dir: /app
+    environment:
+      NEWS_API_KEY: ${NEWS_API_KEY}
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASS: ${POSTGRES_PASS}
+      POSTGRES_DB: ${POSTGRES_DB}
+    command: python run.py
