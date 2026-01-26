@@ -2,6 +2,7 @@ import requests
 import pandas as pd
 from sqlalchemy import create_engine, text
 import os
+import hashlib
 
 API_KEY = os.getenv("NEWS_API_KEY", '')
 PG_HOST = os.getenv("POSTGRES_HOST", "")
@@ -9,11 +10,15 @@ PG_DB = os.getenv("POSTGRES_DB", "")
 PG_USER = os.getenv("POSTGRES_USER", "")
 PG_PASS = os.getenv("POSTGRES_PASS", "")
 
+def make_article_hash(url: str, source: str, published_at: str) -> str:
+    key = f"{url.strip().lower()}|{source.strip().lower()}|{published_at}"
+    return hashlib.sha256(key.encode("utf-8")).hexdigest()
+
 engine = create_engine(f"postgresql://{PG_USER}:{PG_PASS}@{PG_HOST}:5432/{PG_DB}")
 
 with engine.begin() as conn:
     conn.execute(text("DROP TABLE IF EXISTS raw.news;"))
-    conn.execute(text("CREATE TABLE IF NOT EXISTS raw.news(symbol VARCHAR(10), headline TEXT, source VARCHAR(100), published_at TIMESTAMP, content TEXT);"))
+    conn.execute(text("CREATE TABLE IF NOT EXISTS raw.news(symbol VARCHAR(10), headline TEXT, source VARCHAR(100), published_at TIMESTAMP, content TEXT, url TEXT, hash VARCHAR(64));"))
 
 symbols = [
     # Tech / Growth
@@ -40,7 +45,13 @@ for symbol in symbols:
             "headline": a.get("title"),
             "source": a.get("source", {}).get("name"),
             "published_at": pd.to_datetime(a.get("publishedAt")),
-            "content": a.get("content")
+            "content": a.get("content"),
+            "url": a.get("url"),
+            "hash": make_article_hash(
+                url=a.get("url"),
+                source=a.get("source", {}).get("name"),
+                published_at=a.get("publishedAt")
+            )
         } for a in articles
     ])
 

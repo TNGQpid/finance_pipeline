@@ -2,3 +2,4 @@ yfinance
 pandas
 sqlalchemy
 psycopg2-binary
+newspaper4k
