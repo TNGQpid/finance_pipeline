@@ -61,7 +61,7 @@ for symbol in symbols:
     # Deduplicate against Postgres
     existing = pd.read_sql(
         """
-        SELECT symbol, published_at
+        SELECT published_at, hash
         FROM raw.news
         WHERE symbol = %(symbol)s
         """,
@@ -75,9 +75,7 @@ for symbol in symbols:
         df["published_at"] = pd.to_datetime(df["published_at"])
 
         # Keep only new rows
-        df = df[~df[["symbol", "published_at"]].apply(tuple, 1).isin(
-            existing[["symbol", "published_at"]].apply(tuple, 1)
-        )]
+        df = df[~df["hash"].isin(existing["hash"])]
 
     if df.empty:
         print(f"✅ {symbol}: no new articles")
