@@ -104,7 +104,7 @@ def main():
           AND n.url IS NOT NULL
     """
     df = pd.read_sql(query, engine)
-    df = df.iloc[0:20] 
+    #df = df.iloc[0:20] 
 
     if df.empty:
         print("✅ No new articles to scrape.")
