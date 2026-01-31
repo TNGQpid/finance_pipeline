@@ -3,9 +3,6 @@ import yfinance as yf
 import pandas as pd
 from sqlalchemy import create_engine, text
 
-# -----------------------
-# Database configuration
-# -----------------------
 PG_HOST = os.getenv("POSTGRES_HOST", "")
 PG_DB   = os.getenv("POSTGRES_DB", "")
 PG_USER = os.getenv("POSTGRES_USER", "")
