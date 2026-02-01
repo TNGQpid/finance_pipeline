@@ -1,0 +1,9 @@
+
+sources:
+  - name: raw
+    database: "{{ env_var('POSTGRES_DB') }}"
+    schema: raw
+    tables:
+      - name: prices
+      - name: news
+      - name: news_full_article

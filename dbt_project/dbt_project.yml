@@ -1,0 +1,13 @@
+name: finance
+version: 1.0
+config-version: 2
+
+profile: finance
+
+model-paths: ["models"]
+
+models:
+  finance:
+    udm:
+      #+schema: udm
+      +materialized: table

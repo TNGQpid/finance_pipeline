@@ -1,0 +1,1 @@
+{"_invocation_id": "e6346b85-d2e3-4012-96a7-e61d9cfe84f0", "linked": {"0": {"name": "source.finance.raw.prices", "type": "source", "succ": [3]}, "1": {"name": "source.finance.raw.news", "type": "source"}, "2": {"name": "source.finance.raw.news_full_article", "type": "source"}, "3": {"name": "model.finance.prices", "type": "model"}}}

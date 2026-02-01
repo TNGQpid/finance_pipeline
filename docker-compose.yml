@@ -27,17 +27,22 @@ services:
       - "8060:80"
     depends_on:
       - postgres
+  dbt:
+    image: ghcr.io/dbt-labs/dbt-postgres:latest
+    container_name: dbt_transform
+    depends_on:
+      - postgres
+    volumes:
+      - ./dbt_project:/usr/app
+    working_dir: /usr/app
+    environment:
+      DBT_PROFILES_DIR: /usr/app
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASS: ${POSTGRES_PASS}
+      POSTGRES_DB: ${POSTGRES_DB}
+    entrypoint: ["sleep", "infinity"]
 
-  #dbt:
-    #image: ghcr.io/dbt-labs/dbt-postgres:latest
-    #container_name: dbt_transform
-    #depends_on:
-      #- postgres
-    #volumes:
-      #- ./dbt_project:/usr/app
-    #working_dir: /usr/app
-    #environment:
-      #DBT_PROFILES_DIR: /usr/app
 
   etl:
     build: ./etl
